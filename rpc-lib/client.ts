@@ -21,7 +21,7 @@ export class Client<T> {
   }
 
   public async sendRequest(method: string, params?: object) {
-    const data = await this.fetcher({ jsonrpc: "2.0", id: 0, method, params });
+    const data = await this.fetcher({ jsonrpc: "2.0", id: null, method, params });
     if (typeof data?.result === "object") {
       return data?.result;
     }

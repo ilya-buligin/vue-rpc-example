@@ -1,6 +1,5 @@
 import Vue from "vue";
 import App from "./App.vue";
-import router from "./router";
 import { Client } from "../rpc-lib/client";
 import { IMethods } from "../api/shared";
 
@@ -23,6 +22,5 @@ declare module "vue/types/vue" {
 }
 
 new Vue({
-  router,
   render: h => h(App)
 }).$mount("#app");

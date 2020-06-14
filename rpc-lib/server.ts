@@ -32,14 +32,13 @@ export type ServerOptions<T> = {
 export interface IServer {
   transport: ITransport;
   methods: any;
-  
 }
 
 export class Server<T extends object> implements IServer {
   public transport: ITransport;
   public methods: T;
 
-  constructor(options?: ServerOptions<T>) {
+  constructor(options: ServerOptions<T>) {
     this.transport =
       options?.transport || new HTTPTransport(options?.transportOptions);
     this.methods = options.methods;
@@ -55,7 +54,7 @@ export class Server<T extends object> implements IServer {
 
     const results = await Promise.all(
       requests.map(
-        async (req): Promise<RPCResponse> => {
+        async (req: RPCRequest): Promise<RPCResponse> => {
           const isValid = this.isRequestValid(req);
           if (!isValid) {
             return {
@@ -68,7 +67,9 @@ export class Server<T extends object> implements IServer {
             };
           }
 
-          const isExist = this.isMethodExist(req.method);
+          const method = req.method;
+
+          const isExist = this.isMethodExist(method);
           if (!isExist) {
             return {
               jsonrpc: "2.0",
@@ -82,8 +83,9 @@ export class Server<T extends object> implements IServer {
 
           let result;
           try {
-            result = await this.methods[req.method]();
+            result = await this.methods[method](req.params);
           } catch (error) {
+            console.error(error);
             return {
               jsonrpc: "2.0",
               error: {
@@ -106,7 +108,7 @@ export class Server<T extends object> implements IServer {
     return results.length > 1 ? results : results[0];
   }
 
-  private isRequestValid(object): boolean {
+  private isRequestValid(object: RPCRequest): boolean {
     const isJsonrpc = object?.jsonrpc === "2.0";
     const isMethod = typeof object?.method === "string";
     const isParmas =
