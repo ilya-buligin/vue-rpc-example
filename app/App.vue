@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import { Todo } from "../api/shared/todos";
+import { Todo } from "../api/shared";
 
 export default Vue.extend({
   name: "App",

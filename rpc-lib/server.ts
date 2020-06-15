@@ -2,7 +2,11 @@ import HTTPTransport from "./server-http-transport";
 
 export interface ITransport {
   start(options?: Object): Promise<void>;
-  setRequestHandler(handler);
+  setRequestHandler(handler: IHandler): void;
+}
+
+export interface IHandler {
+  (req: RPCRequest | RPCRequest[]): Promise<RPCResponse | RPCResponse[]>;
 }
 
 export type RPCRequest = {
@@ -34,7 +38,11 @@ export interface IServer {
   methods: any;
 }
 
-export class Server<T extends object> implements IServer {
+export interface IMethodsBase {
+  [key: string]: (params: any | void) => Promise<any | void>;
+}
+
+export class Server<T extends IMethodsBase> implements IServer {
   public transport: ITransport;
   public methods: T;
 
@@ -83,7 +91,7 @@ export class Server<T extends object> implements IServer {
 
           let result;
           try {
-            result = await this.methods[method](req.params);
+            result = await this.executeMethod(method, req.params);
           } catch (error) {
             console.error(error);
             return {
@@ -123,5 +131,9 @@ export class Server<T extends object> implements IServer {
 
   private isMethodExist(method: string): boolean {
     return this.methods.hasOwnProperty(method);
+  }
+
+  private async executeMethod(method: string, params?: object) {
+    return await this.methods[method](params);
   }
 }

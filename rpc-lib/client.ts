@@ -6,7 +6,7 @@ export interface IFetcher {
 
 export class Client<T> {
   private fetcher: IFetcher;
-  private proxy: any;
+  private proxy: object;
 
   constructor(fetcher: IFetcher) {
     this.fetcher = fetcher;
@@ -21,13 +21,19 @@ export class Client<T> {
   }
 
   public async sendRequest(method: string, params?: object) {
-    const data = await this.fetcher({ jsonrpc: "2.0", id: null, method, params });
+    const data = await this.fetcher({
+      jsonrpc: "2.0",
+      id: null,
+      method,
+      params
+    });
     if (typeof data?.result === "object") {
       return data?.result;
     }
   }
 
   get methods(): T {
-    return this.proxy;
+    const proxy: any = this.proxy;
+    return proxy;
   }
 }

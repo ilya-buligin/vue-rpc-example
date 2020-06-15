@@ -3,7 +3,13 @@ import { Express, Request, Response } from "express";
 import bodeParser from "body-parser";
 import cors from "cors";
 
-import { Server, ITransport, RPCResponse } from "./server";
+import {
+  Server,
+  ITransport,
+  RPCResponse,
+  RPCRequest,
+  IHandler
+} from "./server";
 
 export type HTTPTransportOptions = {
   path: string;
@@ -15,19 +21,19 @@ export default class HTTPTransport implements ITransport {
   public port: number;
 
   private express: Express;
-  private serverHandler: (req: object) => Promise<RPCResponse | RPCResponse[]>;
+  private serverHandler!: IHandler;
 
   constructor(options?: HTTPTransportOptions) {
     this.path = options?.path || "/rpc";
     this.port = options?.port || 3000;
+    this.express = express();
   }
 
-  public setRequestHandler(handler: (req: object) => Promise<RPCResponse | RPCResponse[]>) {
+  public setRequestHandler(handler: IHandler) {
     this.serverHandler = handler;
   }
 
   public async start() {
-    this.express = express();
     this.setMiddlewares();
     this.express.post(this.path, this.handler.bind(this));
 
