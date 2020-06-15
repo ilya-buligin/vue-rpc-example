@@ -1,5 +1,3 @@
-import { IMethodsBase } from "rpc-lib/server";
-
 export type Todo = {
   id: string;
   description: string;
