@@ -1,4 +1,4 @@
-# sitechanges
+# vue-rpc-example
 
 ## Project setup
 ```
